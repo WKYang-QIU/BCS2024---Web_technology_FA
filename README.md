@@ -45,3 +45,12 @@ node server.js
 ```
 
 Visit: http://localhost:3000
+
+## API Endpoints
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | /api/items | Get all items |
+| GET | /api/items/:id | Get item by ID |
+| POST | /api/items | Create new item |
+| PUT | /api/items/:id | Update item status |
+| DELETE | /api/items/:id | Delete item |
