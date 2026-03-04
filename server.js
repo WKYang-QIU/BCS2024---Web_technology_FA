@@ -17,3 +17,6 @@ app.listen(3000, () => {
     console.log("Server started at http://localhost:3000")
 })
 
+db.query('SELECT 1')
+  .then(() => console.log("Database connected"))
+  .catch(err => console.error(err));
