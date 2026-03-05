@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - User Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>QIU Campus Lost & Found</h1>
+    <nav style="display:flex; align-items:center;">
+        <a href="index.html">Home</a>
+        <a href="lost.html">Lost Items</a>
+        <a href="found.html">Found Items</a>
+        <a href="admin.html" class="active" id="nav-admin">Admin</a>
+        <div style="position:relative; margin-left:15px;">
+            <div id="nav-avatar" onclick="toggleDropdown()"
+                style="width:36px; height:36px; border-radius:50%; background:#f0c040; color:#2c3e50;
+                       display:flex; align-items:center; justify-content:center;
+                       font-weight:bold; font-size:1rem; cursor:pointer; user-select:none;">
+            </div>
+            <div id="nav-dropdown"
+                style="display:none; position:absolute; right:0; top:44px;
+                       background:white; border:1px solid #ddd; border-radius:8px;
+                       min-width:180px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:999;">
+                <div style="padding:12px 16px; border-bottom:1px solid #eee; font-size:0.85rem; color:#555;">
+                    Logged in as<br>
+                    <strong id="nav-username" style="color:#2c3e50;"></strong>
+                </div>
+                <a href="report.html" id="nav-report-link"
+                   style="display:block; padding:10px 16px; font-size:0.9rem; color:#333; text-decoration:none;">
+                   📝 Submit Report
+                </a>
+                <a href="admin.html" id="nav-admin"
+                   style="display:none; padding:10px 16px; font-size:0.9rem; color:#333; text-decoration:none;">
+                   ⚙️ Admin Panel
+                </a>
+                <div style="border-top:1px solid #eee; padding:5px 0;">
+                    <a onclick="logout()" 
+                       style="display:block; padding:10px 16px; font-size:0.9rem; color:#e74c3c; cursor:pointer; text-decoration:none;">
+                        🚪 Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <h2>User Management</h2>
+
+    <!-- Add User Form -->
+    <div class="form-container" style="margin-bottom: 30px;">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">Add New User</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="new-username">Username</label>
+                <input type="text" id="new-username" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label for="new-password">Password</label>
+                <input type="password" id="new-password" placeholder="Min 6 characters">
+            </div>
+        </div>
+        <div class="error-msg" id="add-error"></div>
+        <div class="success-msg" id="add-success">User created successfully!</div>
+        <button class="btn btn-primary" onclick="addUser()">Add User</button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="section-header">
+        <h3 style="color: #2c3e50;">All Users</h3>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="users-tbody">
+            <tr><td colspan="4" class="empty">Loading...</td></tr>
+        </tbody>
+    </table>
+</main>
+
+<script src="script.js"></script>
+<script>
+    // Load page with auth check
+    async function init() {
+        await checkAuth();
+        loadUsers();
+    }
+
+    async function loadUsers() {
+        try {
+            const res = await fetch('/api/users');
+            const json = await res.json();
+            if (!json.success) return;
+
+            const tbody = document.getElementById('users-tbody');
+            if (json.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty">No users found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = json.data.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${sanitize(user.username)}</td>
+                    <td>${new Date(user.created_at).toLocaleString()}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteUser(${user.id}, '${sanitize(user.username)}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch {
+            document.getElementById('users-tbody').innerHTML =
+                '<tr><td colspan="4" class="empty">Failed to load users.</td></tr>';
+        }
+    }
+
+    async function addUser() {
+        const username = document.getElementById('new-username').value.trim();
+        const password = document.getElementById('new-password').value;
+
+        const errorEl = document.getElementById('add-error');
+        const successEl = document.getElementById('add-success');
+        errorEl.style.display = 'none';
+        successEl.style.display = 'none';
+
+        if (!username || username.length < 3) {
+            errorEl.textContent = 'Username must be at least 3 characters.';
+            errorEl.style.display = 'block';
+            return;
+        }
+        if (!password || password.length < 6) {
+            errorEl.textContent = 'Password must be at least 6 characters.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const json = await res.json();
+            if (json.success) {
+                successEl.style.display = 'block';
+                document.getElementById('new-username').value = '';
+                document.getElementById('new-password').value = '';
+                loadUsers();
+            } else {
+                errorEl.textContent = json.message;
+                errorEl.style.display = 'block';
+            }
+        } catch {
+            errorEl.textContent = 'Server error. Please try again.';
+            errorEl.style.display = 'block';
+        }
+    }
+
+    async function deleteUser(id, username) {
+        if (!confirm(`Delete user "${username}"?`)) return;
+        try {
+            const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+            const json = await res.json();
+            if (json.success) loadUsers();
+            else alert(json.message);
+        } catch {
+            alert('Server error. Please try again.');
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>

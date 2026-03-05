@@ -1,3 +1,21 @@
+
+// ── Avatar dropdown toggle ───────────────────────────────────
+function toggleDropdown() {
+    const dropdown = document.getElementById('nav-dropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const avatar = document.getElementById('nav-avatar');
+    const dropdown = document.getElementById('nav-dropdown');
+    if (dropdown && avatar && !avatar.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
 // ── Check login on every page ────────────────────────────────
 async function checkAuth() {
     try {
@@ -6,8 +24,18 @@ async function checkAuth() {
         if (!json.success) {
             window.location.href = 'login.html';
         } else {
+            // Show username and avatar
             const usernameEl = document.getElementById('nav-username');
             if (usernameEl) usernameEl.textContent = json.user.username;
+
+            const avatarEl = document.getElementById('nav-avatar');
+            if (avatarEl) avatarEl.textContent = json.user.username.charAt(0).toUpperCase();
+
+            // Show Admin link only for admin role
+            const adminLink = document.getElementById('nav-admin');
+            if (adminLink) {
+                adminLink.style.display = json.user.role === 'admin' ? 'inline' : 'none';
+            }
         }
     } catch {
         window.location.href = 'login.html';
