@@ -16,7 +16,7 @@ function escapeHtml(str) {
 // Helper: server-side validation
 function validateItem(data) {
     const errors = [];
-    const { title, description, category, location, date, contact } = data;
+    const { title, description, category, location, date_occurred, contact_name } = data;
 
     if (!title || title.trim().length < 3 || title.trim().length > 255)
         errors.push('Title must be between 3 and 255 characters.');
@@ -26,10 +26,10 @@ function validateItem(data) {
         errors.push('Category must be Lost or Found.');
     if (!location || location.trim().length < 2)
         errors.push('Location is required.');
-    if (!date || isNaN(Date.parse(date)))
+    if (!date_occurred || isNaN(Date.parse(date_occurred)))
         errors.push('Valid date is required.');
-    if (!contact || contact.trim().length < 5)
-        errors.push('Contact information is required.');
+    if (!contact_name || contact_name.trim().length < 5)
+        errors.push('Contact name is required (min 5 characters).');
 
     return errors;
 }
@@ -65,7 +65,7 @@ router.get('/:id', async (req, res) => {
 
 // POST create new item
 router.post('/', async (req, res) => {
-    const { title, description, category, location, date, contact } = req.body;
+    const { title, description, category, location, date_occurred, contact_name } = req.body;
 
     const errors = validateItem(req.body);
     if (errors.length > 0)
@@ -75,12 +75,12 @@ router.post('/', async (req, res) => {
     const safeTitle = escapeHtml(title.trim());
     const safeDesc = escapeHtml(description.trim());
     const safeLoc = escapeHtml(location.trim());
-    const safeContact = escapeHtml(contact.trim());
+    const safeContact = escapeHtml(contact_name.trim());
 
     try {
         const [result] = await db.query(
-            'INSERT INTO items (title, description, category, location, date, contact) VALUES (?, ?, ?, ?, ?, ?)',
-            [safeTitle, safeDesc, category, safeLoc, date, safeContact]
+            'INSERT INTO items (title, description, category, location, date_occurred, contact_name) VALUES (?, ?, ?, ?, ?, ?)',
+            [safeTitle, safeDesc, category, safeLoc, date_occurred, safeContact]
         );
         res.status(201).json({ success: true, message: 'Item created.', id: result.insertId });
     } catch (err) {

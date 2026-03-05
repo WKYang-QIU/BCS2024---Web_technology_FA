@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const db = require('./config/database');
 require('dotenv').config();
 
@@ -8,16 +9,33 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Session
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'qiu_lostandfound_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 2 } // 2 hours
+}));
+
+// Auth Middleware
+function requireLogin(req, res, next) {
+    if (req.session.user) {
+        next();
+    } else {
+        res.status(401).json({ success: false, message: 'Please login first.' });
+    }
+}
+
+// Static files 
 app.use(express.static('public'));
 
 // Routes
+const authRouter = require('./routes/auth');
 const itemsRouter = require('./routes/items');
-app.use('/api/items', itemsRouter);
 
-// Serve frontend
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
-});
+app.use('/api/auth', authRouter);
+app.use('/api/items', requireLogin, itemsRouter); // protected
 
 // 404 Handler
 app.use((req, res, next) => {
