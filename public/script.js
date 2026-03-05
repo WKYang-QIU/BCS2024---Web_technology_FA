@@ -140,11 +140,13 @@ function renderTable(items, mode) {
                     <td>${statusBadge(item.status)}</td>
                     <td>
                         <div class="td-actions">
-                            ${item.status === 'Active'
-                                ? `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Claimed')">Claimed</button>`
-                                : `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Resolved')">Resolved</button>`
-                            }
-                            <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+                            ${item.canEdit ? `
+                                ${item.status === 'Active'
+                                    ? `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Claimed')">Claimed</button>`
+                                    : `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Resolved')">Resolved</button>`
+                                }
+                                <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+                            ` : '<span style="color:#aaa; font-size:0.8rem;">No permission</span>'}
                         </div>
                     </td>
                 </tr>`;
@@ -159,11 +161,13 @@ function renderTable(items, mode) {
                     <td>${statusBadge(item.status)}</td>
                     <td>
                         <div class="td-actions">
-                            ${item.status === 'Active'
-                                ? `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Claimed')">Claimed</button>`
-                                : `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Resolved')">Resolved</button>`
-                            }
-                            <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+                            ${item.canEdit ? `
+                                ${item.status === 'Active'
+                                    ? `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Claimed')">Claimed</button>`
+                                    : `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Resolved')">Resolved</button>`
+                                }
+                                <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+                            ` : '<span style="color:#aaa; font-size:0.8rem;">No permission</span>'}
                         </div>
                     </td>
                 </tr>`;

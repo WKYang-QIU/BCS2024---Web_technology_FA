@@ -40,7 +40,13 @@ router.get('/', async (req, res) => {
         const [rows] = await db.query(
             'SELECT * FROM items ORDER BY created_at DESC'
         );
-        res.json({ success: true, data: rows });
+        // Attach canEdit flag for each item
+        const currentUser = req.session.user;
+        const data = rows.map(item => ({
+            ...item,
+            canEdit: currentUser.role === 'admin' || item.user_id === currentUser.id
+        }));
+        res.json({ success: true, data });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Server error fetching items.' });
@@ -71,16 +77,16 @@ router.post('/', async (req, res) => {
     if (errors.length > 0)
         return res.status(400).json({ success: false, errors });
 
-    // Sanitize inputs
     const safeTitle = escapeHtml(title.trim());
     const safeDesc = escapeHtml(description.trim());
     const safeLoc = escapeHtml(location.trim());
     const safeContact = escapeHtml(contact_name.trim());
+    const userId = req.session.user.id;
 
     try {
         const [result] = await db.query(
-            'INSERT INTO items (title, description, category, location, date_occurred, contact_name) VALUES (?, ?, ?, ?, ?, ?)',
-            [safeTitle, safeDesc, category, safeLoc, date_occurred, safeContact]
+            'INSERT INTO items (title, description, category, location, date_occurred, contact_name, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [safeTitle, safeDesc, category, safeLoc, date_occurred, safeContact, userId]
         );
         res.status(201).json({ success: true, message: 'Item created.', id: result.insertId });
     } catch (err) {
@@ -89,7 +95,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT update item status
+// PUT update item status — only owner or admin
 router.put('/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ success: false, message: 'Invalid ID.' });
@@ -100,12 +106,15 @@ router.put('/:id', async (req, res) => {
         return res.status(400).json({ success: false, message: 'Status must be Active, Claimed, or Resolved.' });
 
     try {
-        const [result] = await db.query(
-            'UPDATE items SET status = ? WHERE id = ?',
-            [status, id]
-        );
-        if (result.affectedRows === 0)
+        const [rows] = await db.query('SELECT user_id FROM items WHERE id = ?', [id]);
+        if (rows.length === 0)
             return res.status(404).json({ success: false, message: 'Item not found.' });
+
+        const currentUser = req.session.user;
+        if (currentUser.role !== 'admin' && rows[0].user_id !== currentUser.id)
+            return res.status(403).json({ success: false, message: 'You do not have permission to edit this item.' });
+
+        await db.query('UPDATE items SET status = ? WHERE id = ?', [status, id]);
         res.json({ success: true, message: 'Status updated.' });
     } catch (err) {
         console.error(err);
@@ -113,15 +122,21 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE item
+// DELETE item — only owner or admin
 router.delete('/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ success: false, message: 'Invalid ID.' });
 
     try {
-        const [result] = await db.query('DELETE FROM items WHERE id = ?', [id]);
-        if (result.affectedRows === 0)
+        const [rows] = await db.query('SELECT user_id FROM items WHERE id = ?', [id]);
+        if (rows.length === 0)
             return res.status(404).json({ success: false, message: 'Item not found.' });
+
+        const currentUser = req.session.user;
+        if (currentUser.role !== 'admin' && rows[0].user_id !== currentUser.id)
+            return res.status(403).json({ success: false, message: 'You do not have permission to delete this item.' });
+
+        await db.query('DELETE FROM items WHERE id = ?', [id]);
         res.json({ success: true, message: 'Item deleted.' });
     } catch (err) {
         console.error(err);
