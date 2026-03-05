@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Report - QIU Lost & Found</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>QIU Campus Lost & Found</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="lost.html">Lost Items</a>
+        <a href="found.html">Found Items</a>
+        <a href="report.html" class="active">Submit Report</a>
+    </nav>
+</header>
+
+<main>
+    <h2>Submit a Report</h2>
+
+    <div class="form-container">
+        <div class="form-group">
+            <label for="f-title">Title</label>
+            <input type="text" id="f-title" placeholder="e.g. Blue Umbrella" maxlength="255">
+        </div>
+
+        <div class="form-group">
+            <label for="f-desc">Description</label>
+            <textarea id="f-desc" placeholder="Describe the item in detail..."></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="f-category">Category</label>
+                <select id="f-category">
+                    <option value="Lost">Lost</option>
+                    <option value="Found">Found</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="f-date">Date</label>
+                <input type="date" id="f-date">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="f-location">Location</label>
+            <input type="text" id="f-location" placeholder="e.g. Library Level 2">
+        </div>
+
+        <div class="form-group">
+            <label for="f-contact">Contact Info</label>
+            <input type="text" id="f-contact" placeholder="Email or phone number">
+        </div>
+
+        <div class="error-msg" id="form-error"></div>
+        <div class="success-msg" id="form-success">Report submitted successfully!</div>
+
+        <button class="btn btn-primary" onclick="submitReport()">Submit Report</button>
+    </div>
+</main>
+
+<script src="script.js"></script>
+<script>
+    // Pre-select category if coming from lost/found page
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('category')) {
+        document.getElementById('f-category').value = params.get('category');
+    }
+    // Set today's date as default
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Found Items - QIU Lost & Found</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>QIU Campus Lost & Found</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="lost.html">Lost Items</a>
+        <a href="found.html" class="active">Found Items</a>
+        <a href="report.html">Submit Report</a>
+    </nav>
+</header>
+
+<main>
+    <div class="section-header">
+        <h2>Found Items</h2>
+        <a href="report.html?category=Found" class="btn btn-primary">+ Report Found Item</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="items-tbody">
+            <tr><td colspan="7" class="empty">Loading...</td></tr>
+        </tbody>
+    </table>
+</main>
+
+<script src="script.js"></script>
+<script>
+    loadItemsByCategory('Found');
+</script>
+</body>
+</html>

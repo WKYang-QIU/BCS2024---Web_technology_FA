@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QIU Campus Lost & Found</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>QIU Campus Lost & Found</h1>
+    <nav>
+        <a href="index.html" class="active">Home</a>
+        <a href="lost.html">Lost Items</a>
+        <a href="found.html">Found Items</a>
+        <a href="report.html">Submit Report</a>
+    </nav>
+</header>
+
+<main>
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="num" id="stat-total">0</div>
+            <div class="label">Total Reports</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" id="stat-lost">0</div>
+            <div class="label">Lost Items</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" id="stat-found">0</div>
+            <div class="label">Found Items</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" id="stat-active">0</div>
+            <div class="label">Active Cases</div>
+        </div>
+    </div>
+
+    <!-- All Items Table -->
+    <div class="section-header">
+        <h2>All Reports</h2>
+        <a href="report.html" class="btn btn-primary">+ Submit Report</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="items-tbody">
+            <tr><td colspan="6" class="empty">Loading...</td></tr>
+        </tbody>
+    </table>
+</main>
+
+<script src="script.js"></script>
+<script>
+    loadAllItems();
+</script>
+</body>
+</html>
