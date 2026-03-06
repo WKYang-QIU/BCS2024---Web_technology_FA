@@ -29,6 +29,10 @@
                     Logged in as<br>
                     <strong id="nav-username" style="color:#2c3e50;"></strong>
                 </div>
+                <a onclick="showDashboard()" id="nav-dashboard-link"
+                   style="display:block; padding:10px 16px; font-size:0.9rem; color:#333; text-decoration:none; cursor:pointer;">
+                   📋 My Dashboard
+                </a>
                 <a href="report.html" id="nav-report-link"
                    style="display:block; padding:10px 16px; font-size:0.9rem; color:#333; text-decoration:none;">
                    📝 Submit Report
@@ -173,5 +177,11 @@
         }
     }
 </script>
+
+<!-- Dashboard Modal -->
+<div id="dashboard-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:20px;">
+    <div id="dashboard-content" style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; max-width:560px; width:100%; max-height:80vh; overflow-y:auto;">
+    </div>
+</div>
 </body>
 </html>

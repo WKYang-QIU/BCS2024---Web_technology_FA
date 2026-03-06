@@ -1,4 +1,168 @@
 
+// ── My Dashboard Modal ───────────────────────────────────────
+async function showDashboard() {
+    toggleDropdown(); // close dropdown
+    const modal = document.getElementById('dashboard-modal');
+    const content = document.getElementById('dashboard-content');
+    if (!modal) return;
+
+    content.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:24px;">Loading...</p>';
+    modal.style.display = 'flex';
+
+    try {
+        const res = await fetch('/api/items');
+        const json = await res.json();
+        if (!json.success) return;
+
+        const myItems = json.data.filter(i => i.canEdit && i.user_id !== null);
+
+        if (myItems.length === 0) {
+            content.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 style="font-size:1rem;">My Reports</h3>
+                    <button onclick="closeDashboard()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
+                </div>
+                <p style="color:var(--text-muted); text-align:center; padding:24px;">You have no reports yet.</p>
+            `;
+            return;
+        }
+
+        content.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="font-size:1rem;">My Reports <span style="color:var(--text-muted); font-weight:400;">(${myItems.length})</span></h3>
+                <button onclick="closeDashboard()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
+            </div>
+            <div style="display:grid; gap:10px;">
+                ${myItems.map(item => `
+                    <div style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <div>
+                                <div style="font-weight:500; margin-bottom:4px;">${sanitize(item.title)}</div>
+                                <div style="display:flex; gap:6px;">${categoryBadge(item.category)} ${statusBadge(item.status)}</div>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button class="btn btn-secondary" onclick="closeDashboard(); showDetail(${item.id})">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+                            </div>
+                        </div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">${sanitize(item.location)} · ${new Date(item.date_occurred).toLocaleDateString()}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } catch {
+        content.innerHTML = '<p style="color:var(--lost); text-align:center; padding:24px;">Failed to load your reports.</p>';
+    }
+}
+
+function closeDashboard() {
+    const modal = document.getElementById('dashboard-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+
+async function updateStatusAndRefresh(id, status) {
+    try {
+        const res = await fetch(`/api/items/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        const json = await res.json();
+        if (json.success) {
+            closeModal();
+            location.reload();
+        } else {
+            alert(json.message);
+        }
+    } catch {
+        alert('Server error. Please try again.');
+    }
+}
+
+
+// ── Show item detail modal ───────────────────────────────────
+let allItemsCache = [];
+
+async function showDetail(id) {
+    let item = allItemsCache.find(i => i.id === id);
+    if (!item) {
+        try {
+            const res = await fetch(`/api/items/${id}`);
+            const json = await res.json();
+            if (!json.success) return;
+            item = json.data;
+        } catch { return; }
+    }
+
+    const dateStr = item.date_occurred
+        ? new Date(item.date_occurred).toLocaleDateString()
+        : '-';
+
+    const canEdit = item.canEdit !== undefined ? item.canEdit : false;
+
+    document.getElementById('modal-content').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+            <div>
+                <h3 style="font-size:1.1rem; margin-bottom:6px;">${sanitize(item.title)}</h3>
+                <div style="display:flex; gap:8px;">
+                    ${categoryBadge(item.category)} ${statusBadge(item.status)}
+                </div>
+            </div>
+            <button onclick="closeModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
+        </div>
+        <div style="display:grid; gap:12px; font-size:0.875rem;">
+            <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Description</span>${sanitize(item.description)}</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Location</span>${sanitize(item.location)}</div>
+                <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Date</span>${dateStr}</div>
+            </div>
+            <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Contact</span>${sanitize(item.contact_name)}${item.contact_email ? ' · ' + sanitize(item.contact_email) : ''}${item.contact_phone ? ' · ' + sanitize(item.contact_phone) : ''}</div>
+            <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Reported</span>${new Date(item.created_at).toLocaleString()}</div>
+            ${canEdit ? `
+            <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px;">
+                <span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Update Status</span>
+                <div style="display:flex; gap:8px;">
+                    <button onclick="updateStatusAndRefresh(${item.id}, 'Active')" 
+                        style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); cursor:pointer; font-size:0.8rem; font-weight:600;
+                        background:${item.status === 'Active' ? 'rgba(47,129,247,0.2)' : 'transparent'}; 
+                        color:${item.status === 'Active' ? 'var(--active)' : 'var(--text-muted)'}; 
+                        border-color:${item.status === 'Active' ? 'var(--active)' : 'var(--border)'};">
+                        Active
+                    </button>
+                    <button onclick="updateStatusAndRefresh(${item.id}, 'Claimed')"
+                        style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); cursor:pointer; font-size:0.8rem; font-weight:600;
+                        background:${item.status === 'Claimed' ? 'rgba(210,153,34,0.2)' : 'transparent'}; 
+                        color:${item.status === 'Claimed' ? 'var(--claimed)' : 'var(--text-muted)'}; 
+                        border-color:${item.status === 'Claimed' ? 'var(--claimed)' : 'var(--border)'};">
+                        Claimed
+                    </button>
+                    <button onclick="updateStatusAndRefresh(${item.id}, 'Resolved')"
+                        style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); cursor:pointer; font-size:0.8rem; font-weight:600;
+                        background:${item.status === 'Resolved' ? 'rgba(125,133,144,0.2)' : 'transparent'}; 
+                        color:${item.status === 'Resolved' ? 'var(--resolved)' : 'var(--text-muted)'}; 
+                        border-color:${item.status === 'Resolved' ? 'var(--resolved)' : 'var(--border)'};">
+                        Resolved
+                    </button>
+                </div>
+            </div>` : ''}
+        </div>
+    `;
+    document.getElementById('item-modal').style.display = 'flex';
+    return false;
+}
+
+function closeModal() {
+    document.getElementById('item-modal').style.display = 'none';
+}
+
+// Close modal on backdrop click
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('item-modal');
+    if (modal && e.target === modal) closeModal();
+});
+
+
 // ── Avatar dropdown toggle ───────────────────────────────────
 function toggleDropdown() {
     const dropdown = document.getElementById('nav-dropdown');
@@ -85,6 +249,7 @@ async function loadAllItems() {
         document.getElementById('stat-found').textContent = items.filter(i => i.category === 'Found').length;
         document.getElementById('stat-active').textContent = items.filter(i => i.status === 'Active').length;
 
+        allItemsCache = items;
         renderTable(items, 'all');
 
     } catch (err) {
@@ -133,7 +298,7 @@ function renderTable(items, mode) {
         if (mode === 'all') {
             return `
                 <tr>
-                    <td>${sanitize(item.title)}</td>
+                    <td><a href="#" onclick="showDetail(${item.id})" style="color:var(--accent); text-decoration:none; font-weight:500;">${sanitize(item.title)}</a></td>
                     <td>${categoryBadge(item.category)}</td>
                     <td>${sanitize(item.location)}</td>
                     <td>${dateStr}</td>
@@ -141,19 +306,16 @@ function renderTable(items, mode) {
                     <td>
                         <div class="td-actions">
                             ${item.canEdit ? `
-                                ${item.status === 'Active'
-                                    ? `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Claimed')">Claimed</button>`
-                                    : `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Resolved')">Resolved</button>`
-                                }
+                                <button class="btn btn-secondary" onclick="showDetail(${item.id})">Edit</button>
                                 <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
-                            ` : '<span style="color:#aaa; font-size:0.8rem;">No permission</span>'}
+                            ` : ''}
                         </div>
                     </td>
                 </tr>`;
         } else {
             return `
                 <tr>
-                    <td>${sanitize(item.title)}</td>
+                    <td><a href="#" onclick="showDetail(${item.id})" style="color:var(--accent); text-decoration:none; font-weight:500;">${sanitize(item.title)}</a></td>
                     <td>${sanitize(item.description)}</td>
                     <td>${sanitize(item.location)}</td>
                     <td>${dateStr}</td>
@@ -162,12 +324,9 @@ function renderTable(items, mode) {
                     <td>
                         <div class="td-actions">
                             ${item.canEdit ? `
-                                ${item.status === 'Active'
-                                    ? `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Claimed')">Claimed</button>`
-                                    : `<button class="btn btn-secondary" onclick="updateStatus(${item.id}, 'Resolved')">Resolved</button>`
-                                }
+                                <button class="btn btn-secondary" onclick="showDetail(${item.id})">Edit</button>
                                 <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
-                            ` : '<span style="color:#aaa; font-size:0.8rem;">No permission</span>'}
+                            ` : ''}
                         </div>
                     </td>
                 </tr>`;
