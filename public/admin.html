@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - User Management</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.min.css">
 </head>
 <body>
 
@@ -90,13 +90,6 @@
 </main>
 
 <script src="script.js" defer></script>
-<script>
-    // Load page with auth check
-    async function init() {
-        await checkAuth();
-        loadUsers();
-    }
-
     async function loadUsers() {
         try {
             const res = await fetch('/api/users');
@@ -179,7 +172,6 @@
         }
     }
 
-    init();
 </script>
 </body>
 </html>

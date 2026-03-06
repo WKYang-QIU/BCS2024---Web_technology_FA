@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit Report - QIU Lost & Found</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.min.css">
 </head>
 <body>
 
@@ -94,14 +94,6 @@
 </main>
 
 <script src="script.js" defer></script>
-<script>
-    // Pre-select category if coming from lost/found page
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('category')) {
-        document.getElementById('f-category').value = params.get('category');
-    }
-    // Set today's date as default
-    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
-</script>
+
 </body>
 </html>

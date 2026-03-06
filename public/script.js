@@ -251,3 +251,26 @@ function showError(msg) {
     el.textContent = msg;
     el.style.display = 'block';
 }
+
+// ── Auto-initialize based on current page ───────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+
+    if (page === 'index.html' || page === '') {
+        loadAllItems();
+    } else if (page === 'lost.html') {
+        loadItemsByCategory('Lost');
+    } else if (page === 'found.html') {
+        loadItemsByCategory('Found');
+    } else if (page === 'report.html') {
+        loadReportPage();
+        // Pre-select category if coming from lost/found page
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('category')) {
+            document.getElementById('f-category').value = params.get('category');
+        }
+        document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    } else if (page === 'admin.html') {
+        checkAuth().then(() => loadUsers());
+    }
+});
