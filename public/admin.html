@@ -1,74 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - User Management</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header id="main-nav"></header>
+    <header id="main-nav"></header>
 
-<main>
-    <h2>User Management</h2>
+    <main>
+        <h2>User Management</h2>
 
-    <!-- Add User Form -->
-    <div class="form-container" style="margin-bottom: 30px;">
-        <h3 style="margin-bottom: 20px;">Add New User</h3>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="new-username">Username</label>
-                <input type="text" id="new-username" placeholder="Enter username">
+        <!-- Add User Form -->
+        <div class="form-container" style="margin-bottom: 30px;">
+            <h3 style="margin-bottom: 20px;">Add New User</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="new-username">Username</label>
+                    <input type="text" id="new-username" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Password</label>
+                    <input type="password" id="new-password" placeholder="Min 6 characters">
+                </div>
             </div>
-            <div class="form-group">
-                <label for="new-password">Password</label>
-                <input type="password" id="new-password" placeholder="Min 6 characters">
-            </div>
+            <div class="error-msg" id="add-error"></div>
+            <div class="success-msg" id="add-success">User created successfully!</div>
+            <button class="btn btn-primary" onclick="addUser()">Add User</button>
         </div>
-        <div class="error-msg" id="add-error"></div>
-        <div class="success-msg" id="add-success">User created successfully!</div>
-        <button class="btn btn-primary" onclick="addUser()">Add User</button>
-    </div>
 
-    <!-- Users Table -->
-    <div class="section-header">
-        <h3>All Users</h3>
-    </div>
+        <!-- Users Table -->
+        <div class="section-header">
+            <h3>All Users</h3>
+        </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Created At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="users-tbody">
-            <tr><td colspan="4" class="empty">Loading...</td></tr>
-        </tbody>
-    </table>
-</main>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="users-tbody">
+                <tr>
+                    <td colspan="4" class="empty">Loading...</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
 
-<footer id="main-footer"></footer>
+    <footer id="main-footer"></footer>
 
 
-<script src="script.js" defer></script>
-<script>
-    async function loadUsers() {
-        try {
-            const res = await fetch('/api/users');
-            const json = await res.json();
-            if (!json.success) return;
+    <script src="script.js" defer></script>
+    <script>
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/users');
+                const json = await res.json();
+                if (!json.success) return;
 
-            const tbody = document.getElementById('users-tbody');
-            if (json.data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="empty">No users found.</td></tr>';
-                return;
-            }
+                const tbody = document.getElementById('users-tbody');
+                if (json.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="empty">No users found.</td></tr>';
+                    return;
+                }
 
-            tbody.innerHTML = json.data.map(user => `
+                tbody.innerHTML = json.data.map(user => `
                 <tr>
                     <td>${user.id}</td>
                     <td>${sanitize(user.username)}</td>
@@ -78,71 +82,67 @@
                     </td>
                 </tr>
             `).join('');
-        } catch {
-            document.getElementById('users-tbody').innerHTML =
-                '<tr><td colspan="4" class="empty">Failed to load users.</td></tr>';
-        }
-    }
-
-    async function addUser() {
-        const username = document.getElementById('new-username').value.trim();
-        const password = document.getElementById('new-password').value;
-
-        const errorEl = document.getElementById('add-error');
-        const successEl = document.getElementById('add-success');
-        errorEl.style.display = 'none';
-        successEl.style.display = 'none';
-
-        if (!username || username.length < 3) {
-            errorEl.textContent = 'Username must be at least 3 characters.';
-            errorEl.style.display = 'block';
-            return;
-        }
-        if (!password || password.length < 6) {
-            errorEl.textContent = 'Password must be at least 6 characters.';
-            errorEl.style.display = 'block';
-            return;
+            } catch {
+                document.getElementById('users-tbody').innerHTML =
+                    '<tr><td colspan="4" class="empty">Failed to load users.</td></tr>';
+            }
         }
 
-        try {
-            const res = await fetch('/api/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const json = await res.json();
-            if (json.success) {
-                successEl.style.display = 'block';
-                document.getElementById('new-username').value = '';
-                document.getElementById('new-password').value = '';
-                loadUsers();
-            } else {
-                errorEl.textContent = json.message;
+        async function addUser() {
+            const username = document.getElementById('new-username').value.trim();
+            const password = document.getElementById('new-password').value;
+
+            const errorEl = document.getElementById('add-error');
+            const successEl = document.getElementById('add-success');
+            errorEl.style.display = 'none';
+            successEl.style.display = 'none';
+
+            if (!username || username.length < 3) {
+                errorEl.textContent = 'Username must be at least 3 characters.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            if (!password || password.length < 6) {
+                errorEl.textContent = 'Password must be at least 6 characters.';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    successEl.style.display = 'block';
+                    document.getElementById('new-username').value = '';
+                    document.getElementById('new-password').value = '';
+                    loadUsers();
+                } else {
+                    errorEl.textContent = json.message;
+                    errorEl.style.display = 'block';
+                }
+            } catch {
+                errorEl.textContent = 'Server error. Please try again.';
                 errorEl.style.display = 'block';
             }
-        } catch {
-            errorEl.textContent = 'Server error. Please try again.';
-            errorEl.style.display = 'block';
         }
-    }
 
-    async function deleteUser(id, username) {
-        if (!confirm(`Delete user "${username}"?`)) return;
-        try {
-            const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
-            const json = await res.json();
-            if (json.success) loadUsers();
-            else alert(json.message);
-        } catch {
-            alert('Server error. Please try again.');
+        async function deleteUser(id, username) {
+            if (!confirm(`Delete user "${username}"?`)) return;
+            try {
+                const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+                const json = await res.json();
+                if (json.success) loadUsers();
+                else alert(json.message);
+            } catch {
+                alert('Server error. Please try again.');
+            }
         }
-    }
-</script>
+    </script>
 
-<!-- Dashboard Modal -->
-<div id="dashboard-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:20px;">
-    <div id="dashboard-content" style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; max-width:560px; width:100%; max-height:80vh; overflow-y:auto;">
-    </div>
-</div>
 </body>
+
 </html>

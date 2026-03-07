@@ -1,4 +1,18 @@
 
+// ── Load shared modals ───────────────────────────────────────
+async function loadModals() {
+    try {
+        const res = await fetch('/modal.html');
+        const html = await res.text();
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        document.body.appendChild(div);
+    } catch (err) {
+        console.error('Failed to load modals:', err);
+    }
+}
+
+
 // ── Load shared footer ───────────────────────────────────────
 async function loadFooter() {
     try {
@@ -49,7 +63,7 @@ async function showDashboard() {
     const content = document.getElementById('dashboard-content');
     if (!modal) return;
 
-    content.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:24px;">Loading...</p>';
+    content.innerHTML = '<p style="color:var(--text-secondary); text-align:center; padding:24px;">Loading...</p>';
     modal.style.display = 'flex';
 
     try {
@@ -63,21 +77,21 @@ async function showDashboard() {
             content.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h3 style="font-size:1rem;">My Reports</h3>
-                    <button onclick="closeDashboard()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
+                    <button onclick="closeDashboard()" style="background:none; border:none; color:var(--text-secondary); font-size:1.3rem; cursor:pointer;">✕</button>
                 </div>
-                <p style="color:var(--text-muted); text-align:center; padding:24px;">You have no reports yet.</p>
+                <p style="color:var(--text-secondary); text-align:center; padding:24px;">You have no reports yet.</p>
             `;
             return;
         }
 
         content.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="font-size:1rem;">My Reports <span style="color:var(--text-muted); font-weight:400;">(${myItems.length})</span></h3>
-                <button onclick="closeDashboard()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
+                <h3 style="font-size:1rem;">My Reports <span style="color:var(--text-secondary); font-weight:400;">(${myItems.length})</span></h3>
+                <button onclick="closeDashboard()" style="background:none; border:none; color:var(--text-secondary); font-size:1.3rem; cursor:pointer;">✕</button>
             </div>
             <div style="display:grid; gap:10px;">
                 ${myItems.map(item => `
-                    <div style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:14px;">
+                    <div style="background:var(--bg-hover); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div>
                                 <div style="font-weight:500; margin-bottom:4px;">${sanitize(item.title)}</div>
@@ -88,13 +102,13 @@ async function showDashboard() {
                                 <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
                             </div>
                         </div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);">${sanitize(item.location)} · ${new Date(item.date_occurred).toLocaleDateString()}</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary);">${sanitize(item.location)} · ${new Date(item.date_occurred).toLocaleDateString()}</div>
                     </div>
                 `).join('')}
             </div>
         `;
     } catch {
-        content.innerHTML = '<p style="color:var(--lost); text-align:center; padding:24px;">Failed to load your reports.</p>';
+        content.innerHTML = '<p style="color:var(--color-red); text-align:center; padding:24px;">Failed to load your reports.</p>';
     }
 }
 
@@ -147,7 +161,7 @@ async function showDetail(id) {
                 const cached = json.data.find(i => i.id === id);
                 if (cached) item = cached;
             }
-        } catch {}
+        } catch { }
     }
 
     const dateStr = item.date_occurred
@@ -164,39 +178,39 @@ async function showDetail(id) {
                     ${categoryBadge(item.category)} ${statusBadge(item.status)}
                 </div>
             </div>
-            <button onclick="closeModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:var(--text-secondary); font-size:1.3rem; cursor:pointer;">✕</button>
         </div>
         <div style="display:grid; gap:12px; font-size:0.875rem;">
-            <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Description</span>${sanitize(item.description)}</div>
+            <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Description</span>${sanitize(item.description)}</div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Location</span>${sanitize(item.location)}</div>
-                <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Date</span>${dateStr}</div>
+                <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Location</span>${sanitize(item.location)}</div>
+                <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Date</span>${dateStr}</div>
             </div>
-            <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Contact</span>${sanitize(item.contact_name)}${item.contact_email ? ' · ' + sanitize(item.contact_email) : ''}${item.contact_phone ? ' · ' + sanitize(item.contact_phone) : ''}</div>
-            <div><span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Reported</span>${new Date(item.created_at).toLocaleString()}</div>
+            <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Contact</span>${sanitize(item.contact_name)}${item.contact_email ? ' · ' + sanitize(item.contact_email) : ''}${item.contact_phone ? ' · ' + sanitize(item.contact_phone) : ''}</div>
+            <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Reported</span>${new Date(item.created_at).toLocaleString()}</div>
             ${canEdit ? `
-            <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px;">
-                <span style="color:var(--text-muted); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Update Status</span>
+            <div style="border-top:1px solid var(--border-color); padding-top:14px; margin-top:4px;">
+                <span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Update Status</span>
                 <div style="display:flex; gap:8px;">
                     <button onclick="updateStatusAndRefresh(${item.id}, 'Active')" 
-                        style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); cursor:pointer; font-size:0.8rem; font-weight:600;
+                        style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer; font-size:0.8rem; font-weight:600;
                         background:${item.status === 'Active' ? 'rgba(47,129,247,0.2)' : 'transparent'}; 
-                        color:${item.status === 'Active' ? 'var(--active)' : 'var(--text-muted)'}; 
-                        border-color:${item.status === 'Active' ? 'var(--active)' : 'var(--border)'};">
+                        color:${item.status === 'Active' ? 'var(--color-blue)' : 'var(--text-secondary)'}; 
+                        border-color:${item.status === 'Active' ? 'var(--color-blue)' : 'var(--border-color)'};">
                         Active
                     </button>
                     <button onclick="updateStatusAndRefresh(${item.id}, 'Claimed')"
-                        style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); cursor:pointer; font-size:0.8rem; font-weight:600;
+                        style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer; font-size:0.8rem; font-weight:600;
                         background:${item.status === 'Claimed' ? 'rgba(210,153,34,0.2)' : 'transparent'}; 
-                        color:${item.status === 'Claimed' ? 'var(--claimed)' : 'var(--text-muted)'}; 
-                        border-color:${item.status === 'Claimed' ? 'var(--claimed)' : 'var(--border)'};">
+                        color:${item.status === 'Claimed' ? 'var(--color-yellow)' : 'var(--text-secondary)'}; 
+                        border-color:${item.status === 'Claimed' ? 'var(--color-yellow)' : 'var(--border-color)'};">
                         Claimed
                     </button>
                     <button onclick="updateStatusAndRefresh(${item.id}, 'Resolved')"
-                        style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); cursor:pointer; font-size:0.8rem; font-weight:600;
+                        style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer; font-size:0.8rem; font-weight:600;
                         background:${item.status === 'Resolved' ? 'rgba(125,133,144,0.2)' : 'transparent'}; 
-                        color:${item.status === 'Resolved' ? 'var(--resolved)' : 'var(--text-muted)'}; 
-                        border-color:${item.status === 'Resolved' ? 'var(--resolved)' : 'var(--border)'};">
+                        color:${item.status === 'Resolved' ? 'var(--color-gray)' : 'var(--text-secondary)'}; 
+                        border-color:${item.status === 'Resolved' ? 'var(--color-gray)' : 'var(--border-color)'};">
                         Resolved
                     </button>
                 </div>
@@ -212,7 +226,7 @@ function closeModal() {
 }
 
 // Close modal on backdrop click
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const modal = document.getElementById('item-modal');
     if (modal && e.target === modal) closeModal();
 });
@@ -227,7 +241,7 @@ function toggleDropdown() {
 }
 
 // Close dropdown when clicking outside
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const avatar = document.getElementById('nav-avatar');
     const dropdown = document.getElementById('nav-dropdown');
     if (dropdown && avatar && !avatar.contains(e.target) && !dropdown.contains(e.target)) {
@@ -354,7 +368,7 @@ function renderTable(items, mode) {
         if (mode === 'all') {
             return `
                 <tr>
-                    <td><a href="#" onclick="showDetail(${item.id})" style="color:var(--accent); text-decoration:none; font-weight:500;">${sanitize(item.title)}</a></td>
+                    <td><a href="#" onclick="showDetail(${item.id})" style="color:var(--color-blue); text-decoration:none; font-weight:500;">${sanitize(item.title)}</a></td>
                     <td>${categoryBadge(item.category)}</td>
                     <td>${sanitize(item.location)}</td>
                     <td>${dateStr}</td>
@@ -371,7 +385,7 @@ function renderTable(items, mode) {
         } else {
             return `
                 <tr>
-                    <td><a href="#" onclick="showDetail(${item.id})" style="color:var(--accent); text-decoration:none; font-weight:500;">${sanitize(item.title)}</a></td>
+                    <td><a href="#" onclick="showDetail(${item.id})" style="color:var(--color-blue); text-decoration:none; font-weight:500;">${sanitize(item.title)}</a></td>
                     <td>${sanitize(item.description)}</td>
                     <td>${sanitize(item.location)}</td>
                     <td>${dateStr}</td>
@@ -471,6 +485,7 @@ function showError(msg) {
 document.addEventListener('DOMContentLoaded', async () => {
     await loadNav();
     await loadFooter();
+    await loadModals();
 
     const page = window.location.pathname.split('/').pop() || 'index.html';
 

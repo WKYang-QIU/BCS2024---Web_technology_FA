@@ -5,34 +5,33 @@
     <a href="found.html" id="nav-found">Found Items</a>
     <a href="admin.html" id="nav-admin" style="display:none;">Admin</a>
     <div style="position:relative; margin-left:15px;">
-        <div id="nav-avatar" onclick="toggleDropdown()"
-            style="width:36px; height:36px; border-radius:50%; background:#f0c040; color:#2c3e50;
+        <div id="nav-avatar" onclick="toggleDropdown()" style="width:36px; height:36px; border-radius:50%; background:#f0c040; color:#2c3e50;
                    display:flex; align-items:center; justify-content:center;
                    font-weight:bold; font-size:1rem; cursor:pointer; user-select:none;">
         </div>
-        <div id="nav-dropdown"
-            style="display:none; position:absolute; right:0; top:44px;
-                   background:var(--surface); border:1px solid var(--border); border-radius:8px;
+        <div id="nav-dropdown" style="display:none; position:absolute; right:0; top:44px;
+                   background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px;
                    min-width:180px; box-shadow:0 4px 12px rgba(0,0,0,0.4); z-index:999;">
-            <div style="padding:12px 16px; border-bottom:1px solid var(--border); font-size:0.85rem; color:var(--text-muted);">
+            <div
+                style="padding:12px 16px; border-bottom:1px solid var(--border-color); font-size:0.85rem; color:var(--text-secondary);">
                 Logged in as<br>
                 <strong id="nav-username" style="color:var(--text);"></strong>
             </div>
             <a onclick="showDashboard()" id="nav-dashboard-link"
-               style="display:block; padding:10px 16px; font-size:0.9rem; color:var(--text); text-decoration:none; cursor:pointer;">
-               📋 My Dashboard
+                style="display:block; padding:10px 16px; font-size:0.9rem; color:var(--text); text-decoration:none; cursor:pointer;">
+                📋 My Dashboard
             </a>
             <a href="report.html" id="nav-report-link"
-               style="display:block; padding:10px 16px; font-size:0.9rem; color:var(--text); text-decoration:none;">
-               📝 Submit Report
+                style="display:block; padding:10px 16px; font-size:0.9rem; color:var(--text); text-decoration:none;">
+                📝 Submit Report
             </a>
             <a href="admin.html" id="nav-admin-dropdown"
-               style="display:none; padding:10px 16px; font-size:0.9rem; color:var(--text); text-decoration:none;">
-               ⚙️ Admin Panel
+                style="display:none; padding:10px 16px; font-size:0.9rem; color:var(--text); text-decoration:none;">
+                ⚙️ Admin Panel
             </a>
-            <div style="border-top:1px solid var(--border); padding:5px 0;">
+            <div style="border-top:1px solid var(--border-color); padding:5px 0;">
                 <a onclick="logout()"
-                   style="display:block; padding:10px 16px; font-size:0.9rem; color:var(--lost); cursor:pointer; text-decoration:none;">
+                    style="display:block; padding:10px 16px; font-size:0.9rem; color:var(--color-red); cursor:pointer; text-decoration:none;">
                     🚪 Logout
                 </a>
             </div>

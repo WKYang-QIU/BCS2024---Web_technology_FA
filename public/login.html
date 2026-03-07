@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             flex-direction: column;
             min-height: 100vh;
         }
+
         .login-wrapper {
             flex: 1;
             display: flex;
@@ -20,154 +22,158 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="login-wrapper">
-<div class="login-box">
-    <h2>QIU <span>Lost & Found</span></h2>
-    <p>Please login to continue</p>
+    <div class="login-wrapper">
+        <div class="login-box">
+            <h2>QIU <span>Lost & Found</span></h2>
+            <p>Please login to continue</p>
 
-    <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter your username">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+
+            <div class="error-msg" id="login-error"></div>
+
+            <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="login()">Login</button>
+            <p style="text-align:center; margin-top:14px; font-size:0.82rem;">
+                <a href="#" onclick="showForgot()" style="color:var(--accent); text-decoration:none;">Forgot
+                    password?</a>
+            </p>
+
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter your password">
-    </div>
+    <!-- Forgot Password Box -->
+    <div class="login-wrapper" id="forgot-wrapper" style="display:none;">
+        <div class="login-box" id="forgot-box" style="display:block;" style="display:none;">
+            <h2>QIU <span>Lost & Found</span></h2>
+            <p>Reset your password</p>
 
-    <div class="error-msg" id="login-error"></div>
+            <div class="form-group">
+                <label for="reset-username">Username / Email</label>
+                <input type="text" id="reset-username" placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label for="reset-password">New Password</label>
+                <input type="password" id="reset-password" placeholder="Min 6 characters">
+            </div>
+            <div class="form-group">
+                <label for="reset-confirm">Confirm Password</label>
+                <input type="password" id="reset-confirm" placeholder="Repeat new password">
+            </div>
 
-    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="login()">Login</button>
-    <p style="text-align:center; margin-top:14px; font-size:0.82rem;">
-        <a href="#" onclick="showForgot()" style="color:var(--accent); text-decoration:none;">Forgot password?</a>
-    </p>
+            <div class="error-msg" id="reset-error"></div>
+            <div class="success-msg" id="reset-success">Password reset successfully!</div>
 
-</div>
-</div>
+            <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="resetPassword()">Reset
+                Password</button>
+            <p style="text-align:center; margin-top:14px; font-size:0.82rem;">
+                <a href="#" onclick="showLogin()" style="color:var(--accent); text-decoration:none;">← Back to Login</a>
+            </p>
+        </div>
 
-<!-- Forgot Password Box -->
-<div class="login-wrapper" id="forgot-wrapper" style="display:none;">
-<div class="login-box" id="forgot-box" style="display:block;" style="display:none;">
-    <h2>QIU <span>Lost & Found</span></h2>
-    <p>Reset your password</p>
-
-    <div class="form-group">
-        <label for="reset-username">Username / Email</label>
-        <input type="text" id="reset-username" placeholder="Enter your username">
-    </div>
-    <div class="form-group">
-        <label for="reset-password">New Password</label>
-        <input type="password" id="reset-password" placeholder="Min 6 characters">
-    </div>
-    <div class="form-group">
-        <label for="reset-confirm">Confirm Password</label>
-        <input type="password" id="reset-confirm" placeholder="Repeat new password">
-    </div>
-
-    <div class="error-msg" id="reset-error"></div>
-    <div class="success-msg" id="reset-success">Password reset successfully!</div>
-
-    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="resetPassword()">Reset Password</button>
-    <p style="text-align:center; margin-top:14px; font-size:0.82rem;">
-        <a href="#" onclick="showLogin()" style="color:var(--accent); text-decoration:none;">← Back to Login</a>
-    </p>
-</div>
-
-<script>
-    function showForgot() {
-        document.getElementById('forgot-wrapper').style.display = 'flex';
-        document.querySelector('.login-wrapper').style.display = 'none';
-    }
-
-    function showLogin() {
-        document.getElementById('forgot-wrapper').style.display = 'none';
-        document.querySelector('.login-wrapper').style.display = 'flex';
-    }
-
-    async function resetPassword() {
-        const username = document.getElementById('reset-username').value.trim();
-        const password = document.getElementById('reset-password').value;
-        const confirm = document.getElementById('reset-confirm').value;
-        const errorEl = document.getElementById('reset-error');
-        const successEl = document.getElementById('reset-success');
-        errorEl.style.display = 'none';
-        successEl.style.display = 'none';
-
-        if (!username) { errorEl.textContent = 'Username is required.'; errorEl.style.display = 'block'; return; }
-        if (!password || password.length < 6) { errorEl.textContent = 'Password must be at least 6 characters.'; errorEl.style.display = 'block'; return; }
-        if (password !== confirm) { errorEl.textContent = 'Passwords do not match.'; errorEl.style.display = 'block'; return; }
-
-        try {
-            const res = await fetch('/api/auth/reset-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const json = await res.json();
-            if (json.success) {
-                successEl.style.display = 'block';
-                setTimeout(() => showLogin(), 1500);
-            } else {
-                errorEl.textContent = json.message;
-                errorEl.style.display = 'block';
+        <script>
+            function showForgot() {
+                document.getElementById('forgot-wrapper').style.display = 'flex';
+                document.querySelector('.login-wrapper').style.display = 'none';
             }
-        } catch {
-            errorEl.textContent = 'Server error. Please try again.';
-            errorEl.style.display = 'block';
-        }
-    }
 
-    // Load footer
-    fetch('/footer.html').then(r => r.text()).then(html => {
-        const footer = document.getElementById('main-footer');
-        if (footer) footer.innerHTML = html;
-    });
-
-    // If already logged in, redirect to home
-    fetch('/api/auth/check')
-        .then(r => r.json())
-        .then(json => { if (json.success) window.location.href = 'index.html'; });
-
-    async function login() {
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value;
-        const errorEl = document.getElementById('login-error');
-        errorEl.style.display = 'none';
-
-        if (!username) return showError('Username is required.');
-        if (!password) return showError('Password is required.');
-
-        try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const json = await res.json();
-            if (json.success) {
-                window.location.href = 'index.html';
-            } else {
-                showError(json.message);
+            function showLogin() {
+                document.getElementById('forgot-wrapper').style.display = 'none';
+                document.querySelector('.login-wrapper').style.display = 'flex';
             }
-        } catch {
-            showError('Server error. Please try again.');
-        }
-    }
 
-    function showError(msg) {
-        const el = document.getElementById('login-error');
-        el.textContent = msg;
-        el.style.display = 'block';
-    }
+            async function resetPassword() {
+                const username = document.getElementById('reset-username').value.trim();
+                const password = document.getElementById('reset-password').value;
+                const confirm = document.getElementById('reset-confirm').value;
+                const errorEl = document.getElementById('reset-error');
+                const successEl = document.getElementById('reset-success');
+                errorEl.style.display = 'none';
+                successEl.style.display = 'none';
 
-    // Allow pressing Enter to login
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Enter') login();
-    });
-</script>
-</div>
-<footer id="main-footer"></footer>
+                if (!username) { errorEl.textContent = 'Username is required.'; errorEl.style.display = 'block'; return; }
+                if (!password || password.length < 6) { errorEl.textContent = 'Password must be at least 6 characters.'; errorEl.style.display = 'block'; return; }
+                if (password !== confirm) { errorEl.textContent = 'Passwords do not match.'; errorEl.style.display = 'block'; return; }
+
+                try {
+                    const res = await fetch('/api/auth/reset-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        successEl.style.display = 'block';
+                        setTimeout(() => showLogin(), 1500);
+                    } else {
+                        errorEl.textContent = json.message;
+                        errorEl.style.display = 'block';
+                    }
+                } catch {
+                    errorEl.textContent = 'Server error. Please try again.';
+                    errorEl.style.display = 'block';
+                }
+            }
+
+            // Load footer
+            fetch('/footer.html').then(r => r.text()).then(html => {
+                const footer = document.getElementById('main-footer');
+                if (footer) footer.innerHTML = html;
+            });
+
+            // If already logged in, redirect to home
+            fetch('/api/auth/check')
+                .then(r => r.json())
+                .then(json => { if (json.success) window.location.href = 'index.html'; });
+
+            async function login() {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const errorEl = document.getElementById('login-error');
+                errorEl.style.display = 'none';
+
+                if (!username) return showError('Username is required.');
+                if (!password) return showError('Password is required.');
+
+                try {
+                    const res = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        window.location.href = 'index.html';
+                    } else {
+                        showError(json.message);
+                    }
+                } catch {
+                    showError('Server error. Please try again.');
+                }
+            }
+
+            function showError(msg) {
+                const el = document.getElementById('login-error');
+                el.textContent = msg;
+                el.style.display = 'block';
+            }
+
+            // Allow pressing Enter to login
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Enter') login();
+            });
+        </script>
+    </div>
+    <footer id="main-footer"></footer>
 </body>
+
 </html>

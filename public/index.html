@@ -1,75 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QIU Campus Lost & Found</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header id="main-nav"></header>
+    <header id="main-nav"></header>
 
-<main>
-    <!-- Stats -->
-    <div class="stats">
-        <div class="stat-card">
-            <div class="num" id="stat-total">0</div>
-            <div class="label">Total Reports</div>
+    <main>
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="num" id="stat-total">0</div>
+                <div class="label">Total Reports</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="stat-lost">0</div>
+                <div class="label">Lost Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="stat-found">0</div>
+                <div class="label">Found Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="stat-active">0</div>
+                <div class="label">Active Cases</div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="num" id="stat-lost">0</div>
-            <div class="label">Lost Items</div>
+
+        <!-- All Items Table -->
+        <div class="section-header">
+            <h2>All Reports</h2>
+            <a href="report.html" class="btn btn-primary">+ Submit Report</a>
         </div>
-        <div class="stat-card">
-            <div class="num" id="stat-found">0</div>
-            <div class="label">Found Items</div>
-        </div>
-        <div class="stat-card">
-            <div class="num" id="stat-active">0</div>
-            <div class="label">Active Cases</div>
-        </div>
-    </div>
 
-    <!-- All Items Table -->
-    <div class="section-header">
-        <h2>All Reports</h2>
-        <a href="report.html" class="btn btn-primary">+ Submit Report</a>
-    </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="items-tbody">
+                <tr>
+                    <td colspan="6" class="empty">Loading...</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="items-tbody">
-            <tr><td colspan="6" class="empty">Loading...</td></tr>
-        </tbody>
-    </table>
-</main>
-
-<footer id="main-footer"></footer>
+    <footer id="main-footer"></footer>
 
 
-<script src="script.js" defer></script>
+    <script src="script.js" defer></script>
 
-
-<!-- Item Detail Modal -->
-<div id="item-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:20px;">
-    <div id="modal-content" style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; max-width:500px; width:100%; max-height:80vh; overflow-y:auto;">
-    </div>
-</div>
-
-<!-- Dashboard Modal -->
-<div id="dashboard-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:20px;">
-    <div id="dashboard-content" style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; max-width:560px; width:100%; max-height:80vh; overflow-y:auto;">
-    </div>
-</div>
 </body>
+
 </html>
