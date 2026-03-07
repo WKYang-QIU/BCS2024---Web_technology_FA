@@ -1,4 +1,3 @@
-
 // ── Load shared modals ───────────────────────────────────────
 async function loadModals() {
     try {
@@ -180,13 +179,14 @@ async function showDetail(id) {
             </div>
             <button onclick="closeModal()" style="background:none; border:none; color:var(--text-secondary); font-size:1.3rem; cursor:pointer;">✕</button>
         </div>
+        ${item.image_path ? `<img src="${item.image_path}" alt="Item image" style="width:100%; max-height:300px; object-fit:contain; border-radius:8px; margin-bottom:16px; background:#000;">` : ''}
         <div style="display:grid; gap:12px; font-size:0.875rem;">
             <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Description</span>${sanitize(item.description)}</div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                 <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Location</span>${sanitize(item.location)}</div>
                 <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Date</span>${dateStr}</div>
             </div>
-            <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Contact</span>${sanitize(item.contact_name)}${item.contact_email ? ' · ' + sanitize(item.contact_email) : ''}${item.contact_phone ? ' · ' + sanitize(item.contact_phone) : ''}</div>
+            <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Contact</span>${sanitize(item.contact_name)}</div>
             <div><span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px;">Reported</span>${new Date(item.created_at).toLocaleString()}</div>
             ${canEdit ? `
             <div style="border-top:1px solid var(--border-color); padding-top:14px; margin-top:4px;">
@@ -214,11 +214,120 @@ async function showDetail(id) {
                         Resolved
                     </button>
                 </div>
+            </div>
+            <div style="border-top:1px solid var(--border-color); padding-top:14px; margin-top:4px; display:flex; gap:8px;">
+                <button class="btn btn-secondary" onclick="showEditForm(${item.id})">Edit Item</button>
+                <button class="btn btn-danger" onclick="deleteItem(${item.id})">Delete</button>
             </div>` : ''}
         </div>
     `;
     document.getElementById('item-modal').style.display = 'flex';
     return false;
+}
+
+
+// ── Edit Item Form ────────────────────────────────────────────
+async function showEditForm(id) {
+    const item = allItemsCache.find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById('modal-content').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="font-size:1rem;">Edit Item</h3>
+            <button onclick="closeModal()" style="background:none; border:none; color:var(--text-secondary); font-size:1.3rem; cursor:pointer;">✕</button>
+        </div>
+        <div style="display:grid; gap:12px; font-size:0.875rem;">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="edit-title" value="${sanitize(item.title)}">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="edit-desc">${sanitize(item.description)}</textarea>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="edit-category">
+                        <option value="Lost" ${item.category === 'Lost' ? 'selected' : ''}>Lost</option>
+                        <option value="Found" ${item.category === 'Found' ? 'selected' : ''}>Found</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="edit-status">
+                        <option value="Active" ${item.status === 'Active' ? 'selected' : ''}>Active</option>
+                        <option value="Claimed" ${item.status === 'Claimed' ? 'selected' : ''}>Claimed</option>
+                        <option value="Resolved" ${item.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="edit-location" value="${sanitize(item.location)}">
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="edit-date" value="${item.date_occurred ? item.date_occurred.split('T')[0] : ''}">
+            </div>
+            <div class="form-group">
+                <label>Contact</label>
+                <input type="text" id="edit-contact" value="${sanitize(item.contact_name)}">
+            </div>
+            <div class="form-group">
+                <label>Image</label>
+                ${item.image_path ? `<img src="${item.image_path}" style="width:100%; max-height:200px; object-fit:contain; border-radius:6px; margin-bottom:8px; width:100%; background:#000;">` : ''}
+                <input type="file" id="edit-image" accept="image/*" style="padding:6px;">
+                <small style="color:var(--text-secondary); font-size:0.75rem;">Upload new image to replace existing</small>
+            </div>
+            <div id="edit-error" class="error-msg"></div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-primary" onclick="saveEdit(${item.id})">Save Changes</button>
+                <button class="btn btn-secondary" onclick="showDetail(${item.id})">Cancel</button>
+            </div>
+        </div>
+    `;
+}
+
+async function saveEdit(id) {
+    const title = document.getElementById('edit-title').value.trim();
+    const description = document.getElementById('edit-desc').value.trim();
+    const category = document.getElementById('edit-category').value;
+    const status = document.getElementById('edit-status').value;
+    const location = document.getElementById('edit-location').value.trim();
+    const date_occurred = document.getElementById('edit-date').value;
+    const contact_name = document.getElementById('edit-contact').value.trim();
+    const imageFile = document.getElementById('edit-image')?.files[0];
+    const errorEl = document.getElementById('edit-error');
+    errorEl.style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('category', category);
+    formData.append('status', status);
+    formData.append('location', location);
+    formData.append('date_occurred', date_occurred);
+    formData.append('contact_name', contact_name);
+    if (imageFile) formData.append('image', imageFile);
+
+    try {
+        const res = await fetch(`/api/items/${id}`, { method: 'PUT', body: formData });
+        const json = await res.json();
+        if (json.success) {
+            closeModal();
+            const page = window.location.pathname.split('/').pop() || 'index.html';
+            if (page === 'index.html' || page === '') loadAllItems();
+            else if (page === 'lost.html') loadItemsByCategory('Lost');
+            else if (page === 'found.html') loadItemsByCategory('Found');
+        } else {
+            errorEl.textContent = json.errors ? json.errors.join(' ') : json.message;
+            errorEl.style.display = 'block';
+        }
+    } catch {
+        errorEl.textContent = 'Server error. Please try again.';
+        errorEl.style.display = 'block';
+    }
 }
 
 function closeModal() {
@@ -442,6 +551,7 @@ async function submitReport() {
     const location = document.getElementById('f-location').value.trim();
     const date_occurred = document.getElementById('f-date').value;
     const contact_name = document.getElementById('f-contact').value.trim();
+    const imageFile = document.getElementById('f-image')?.files[0];
 
     const errorEl = document.getElementById('form-error');
     const successEl = document.getElementById('form-success');
@@ -454,11 +564,20 @@ async function submitReport() {
     if (!date_occurred) return showError('Date is required.');
     if (!contact_name || contact_name.length < 5) return showError('Contact name is required (min 5 characters).');
 
+    // Use FormData to support file upload
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('category', category);
+    formData.append('location', location);
+    formData.append('date_occurred', date_occurred);
+    formData.append('contact_name', contact_name);
+    if (imageFile) formData.append('image', imageFile);
+
     try {
         const res = await fetch('/api/items', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, description, category, location, date_occurred, contact_name })
+            body: formData // no Content-Type header, let browser set multipart boundary
         });
         const json = await res.json();
         if (json.success) {

@@ -29,6 +29,7 @@ function requireLogin(req, res, next) {
 
 // ── Static files ──────────────────────────────────────────────
 app.use(express.static('public'));
+app.use('/uploads', express.static('public/uploads'));
 
 // ── Routes ───────────────────────────────────────────────────
 const authRouter = require('./routes/auth');

@@ -21,9 +21,12 @@
   "homepage": "https://github.com/WKYang-QIU/BCS2024---Web_technology_FA#readme",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^1.41.3",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
+    "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.18.2"
   }
 }

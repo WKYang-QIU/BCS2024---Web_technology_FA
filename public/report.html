@@ -53,6 +53,11 @@
             <div class="error-msg" id="form-error"></div>
             <div class="success-msg" id="form-success">Report submitted successfully!</div>
 
+            <div class="form-group">
+                <label for="f-image">Image (optional)</label>
+                <input type="file" id="f-image" accept="image/*" style="padding:6px;">
+                <small style="color:var(--text-secondary); font-size:0.75rem;">Max 5MB · JPG, PNG, GIF, WEBP</small>
+            </div>
             <button class="btn btn-primary" onclick="submitReport()">Submit Report</button>
         </div>
     </main>
@@ -63,6 +68,7 @@
     <script src="script.js" defer></script>
 
 
+    <!-- Dashboard Modal -->
 </body>
 
 </html>
