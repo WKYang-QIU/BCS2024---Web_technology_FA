@@ -1,4 +1,47 @@
 
+// ── Load shared footer ───────────────────────────────────────
+async function loadFooter() {
+    try {
+        const res = await fetch('/footer.html');
+        const html = await res.text();
+        const footer = document.getElementById('main-footer');
+        if (footer) footer.innerHTML = html;
+    } catch (err) {
+        console.error('Failed to load footer:', err);
+    }
+}
+
+
+// ── Load shared navigation ───────────────────────────────────
+async function loadNav() {
+    try {
+        const res = await fetch('/nav.html');
+        const html = await res.text();
+        const header = document.getElementById('main-nav');
+        if (header) {
+            header.innerHTML = html;
+            // Set active nav link based on current page
+            const page = window.location.pathname.split('/').pop() || 'index.html';
+            const map = {
+                'index.html': 'nav-home',
+                '': 'nav-home',
+                'lost.html': 'nav-lost',
+                'found.html': 'nav-found',
+                'admin.html': 'nav-admin',
+                'report.html': 'nav-report-link'
+            };
+            const activeId = map[page];
+            if (activeId) {
+                const el = document.getElementById(activeId);
+                if (el) el.classList.add('active');
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load nav:', err);
+    }
+}
+
+
 // ── My Dashboard Modal ───────────────────────────────────────
 async function showDashboard() {
     toggleDropdown(); // close dropdown
@@ -412,7 +455,10 @@ function showError(msg) {
 }
 
 // ── Auto-initialize based on current page ───────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadNav();
+    await loadFooter();
+
     const page = window.location.pathname.split('/').pop() || 'index.html';
 
     if (page === 'index.html' || page === '') {
@@ -423,7 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadItemsByCategory('Found');
     } else if (page === 'report.html') {
         loadReportPage();
-        // Pre-select category if coming from lost/found page
         const params = new URLSearchParams(window.location.search);
         if (params.get('category')) {
             document.getElementById('f-category').value = params.get('category');

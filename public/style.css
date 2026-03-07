@@ -33,6 +33,17 @@ body {
     min-height: 100vh;
     font-size: 14px;
     line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    padding: 20px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
 }
 
 /* ── Header ── */
@@ -88,11 +99,16 @@ nav a.active {
 }
 
 /* ── Main ── */
+
+/* ── Main ── */
 main {
+    flex: 1;
     max-width: 1100px;
     margin: 0 auto;
     padding: 28px 24px;
+    width: 100%;
 }
+
 
 h2 {
     font-size: 1.1rem;
