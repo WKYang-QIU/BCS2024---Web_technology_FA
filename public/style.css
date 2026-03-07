@@ -1,55 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap');
+/* Font Stack - using system fonts for better performance */
 
-*, *::before, *::after {
-    box-sizing: border-box;
+/* ===== Global Reset ===== */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
+/* ===== CSS Variables ===== */
 :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface2: #21262d;
-    --border: #30363d;
+    /* Background colors */
+    --bg-main: #0d1117;
+    --bg-card: #161b22;
+    --bg-hover: #21262d;
+
+    /* Border */
+    --border-color: #30363d;
     --border-hover: #484f58;
-    --text: #e6edf3;
-    --text-muted: #7d8590;
-    --text-subtle: #484f58;
-    --accent: #2f81f7;
-    --accent-hover: #388bfd;
-    --lost: #f85149;
-    --found: #3fb950;
-    --claimed: #d29922;
-    --resolved: #7d8590;
-    --active: #2f81f7;
-    --radius: 6px;
-    --radius-lg: 10px;
+
+    /* Text */
+    --text-primary: #e6edf3;
+    --text-secondary: #7d8590;
+
+    /* Accent / Brand */
+    --color-blue: #2f81f7;
+    --color-blue-hover: #388bfd;
+
+    /* Status colors */
+    --color-red: #f85149;
+    --color-green: #3fb950;
+    --color-yellow: #d29922;
+    --color-gray: #7d8590;
+
+    /* Border radius */
+    --border-radius: 6px;
+    --border-radius-lg: 10px;
 }
 
+/* ===== Body ===== */
 body {
-    font-family: 'Outfit', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
     font-size: 14px;
     line-height: 1.5;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-footer {
-    margin-top: auto;
-    border-top: 1px solid var(--border);
-    padding: 20px 24px;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-}
-
-/* ── Header ── */
+/* ===== Header / Navbar ===== */
 header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
     padding: 0 24px;
     height: 60px;
     display: flex;
@@ -61,15 +64,14 @@ header {
 }
 
 header h1 {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--text);
-    letter-spacing: -0.02em;
+    color: var(--text-primary);
 }
 
 header h1 span {
-    color: var(--accent);
+    color: var(--color-blue);
 }
 
 nav {
@@ -79,51 +81,56 @@ nav {
 }
 
 nav a {
-    color: var(--text-muted);
+    color: var(--text-secondary);
     text-decoration: none;
     padding: 6px 12px;
-    border-radius: var(--radius);
+    border-radius: var(--border-radius);
     font-size: 0.875rem;
-    font-weight: 400;
-    transition: color 0.15s, background 0.15s;
+    transition: color 0.15s, background-color 0.15s;
 }
 
 nav a:hover {
-    color: var(--text);
-    background: var(--surface2);
+    color: var(--text-primary);
+    background-color: var(--bg-hover);
 }
 
 nav a.active {
-    color: var(--text);
+    color: var(--text-primary);
     font-weight: 500;
 }
 
-/* ── Main ── */
-
-/* ── Main ── */
+/* ===== Main Content ===== */
 main {
     flex: 1;
     max-width: 1100px;
+    width: 100%;
     margin: 0 auto;
     padding: 28px 24px;
-    width: 100%;
 }
-
 
 h2 {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--text);
+    color: var(--text-primary);
     margin-bottom: 16px;
 }
 
 h3 {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
-/* ── Stats ── */
+/* ===== Footer ===== */
+footer {
+    border-top: 1px solid var(--border-color);
+    padding: 20px 24px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+/* ===== Stats Cards ===== */
 .stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -132,9 +139,9 @@ h3 {
 }
 
 .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
     padding: 18px 20px;
     transition: border-color 0.15s;
 }
@@ -144,22 +151,22 @@ h3 {
 }
 
 .stat-card .num {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 1.8rem;
     font-weight: 500;
-    color: var(--text);
+    color: var(--text-primary);
     line-height: 1;
     margin-bottom: 6px;
 }
 
 .stat-card .label {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
 
-/* ── Section Header ── */
+/* ===== Section Header ===== */
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -167,14 +174,14 @@ h3 {
     margin-bottom: 12px;
 }
 
-/* ── Buttons ── */
+/* ===== Buttons ===== */
 .btn {
     padding: 6px 14px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
     cursor: pointer;
     font-size: 0.8rem;
-    font-family: 'Outfit', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-weight: 500;
     text-decoration: none;
     display: inline-block;
@@ -183,64 +190,64 @@ h3 {
 }
 
 .btn-primary {
-    background: var(--accent);
-    color: #fff;
+    background-color: var(--color-blue);
+    color: #ffffff;
     border-color: transparent;
 }
 
 .btn-primary:hover {
-    background: var(--accent-hover);
-}
-
-.btn-danger {
-    background: transparent;
-    color: var(--lost);
-    border-color: var(--border);
-}
-
-.btn-danger:hover {
-    background: rgba(248, 81, 73, 0.1);
-    border-color: var(--lost);
+    background-color: var(--color-blue-hover);
 }
 
 .btn-secondary {
-    background: var(--surface2);
-    color: var(--text-muted);
-    border-color: var(--border);
+    background-color: var(--bg-hover);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
 }
 
 .btn-secondary:hover {
-    color: var(--text);
+    color: var(--text-primary);
     border-color: var(--border-hover);
 }
 
-/* ── Table ── */
+.btn-danger {
+    background-color: transparent;
+    color: var(--color-red);
+    border-color: var(--border-color);
+}
+
+.btn-danger:hover {
+    background-color: rgba(248, 81, 73, 0.1);
+    border-color: var(--color-red);
+}
+
+/* ===== Table ===== */
 table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
     overflow: hidden;
-    background: var(--surface);
+    background-color: var(--bg-card);
 }
 
 th {
-    background: var(--surface2);
-    color: var(--text-muted);
+    background-color: var(--bg-hover);
+    color: var(--text-secondary);
     padding: 10px 14px;
     text-align: left;
     font-size: 0.75rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-color);
 }
 
 td {
     padding: 11px 14px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.875rem;
-    color: var(--text);
+    color: var(--text-primary);
     vertical-align: middle;
 }
 
@@ -249,7 +256,7 @@ tr:last-child td {
 }
 
 tr:hover td {
-    background: rgba(255,255,255,0.02);
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
 .td-actions {
@@ -258,51 +265,50 @@ tr:hover td {
     align-items: center;
 }
 
-/* ── Badges ── */
+/* ===== Status & Category Badges ===== */
 .badge {
     padding: 2px 8px;
     border-radius: 20px;
     font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.03em;
     display: inline-block;
 }
 
 .badge-lost {
-    background: rgba(248, 81, 73, 0.15);
-    color: var(--lost);
+    background-color: rgba(248, 81, 73, 0.15);
+    color: var(--color-red);
     border: 1px solid rgba(248, 81, 73, 0.3);
 }
 
 .badge-found {
-    background: rgba(63, 185, 80, 0.15);
-    color: var(--found);
+    background-color: rgba(63, 185, 80, 0.15);
+    color: var(--color-green);
     border: 1px solid rgba(63, 185, 80, 0.3);
 }
 
 .badge-active {
-    background: rgba(47, 129, 247, 0.15);
-    color: var(--active);
+    background-color: rgba(47, 129, 247, 0.15);
+    color: var(--color-blue);
     border: 1px solid rgba(47, 129, 247, 0.3);
 }
 
 .badge-claimed {
-    background: rgba(210, 153, 34, 0.15);
-    color: var(--claimed);
+    background-color: rgba(210, 153, 34, 0.15);
+    color: var(--color-yellow);
     border: 1px solid rgba(210, 153, 34, 0.3);
 }
 
 .badge-resolved {
-    background: rgba(125, 133, 144, 0.15);
-    color: var(--resolved);
+    background-color: rgba(125, 133, 144, 0.15);
+    color: var(--color-gray);
     border: 1px solid rgba(125, 133, 144, 0.3);
 }
 
-/* ── Form ── */
+/* ===== Forms ===== */
 .form-container {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
     padding: 24px;
     max-width: 600px;
 }
@@ -315,7 +321,7 @@ tr:hover td {
     display: block;
     font-size: 0.8rem;
     font-weight: 500;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -326,12 +332,12 @@ tr:hover td {
 .form-group textarea {
     width: 100%;
     padding: 8px 12px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
     font-size: 0.875rem;
-    font-family: 'Outfit', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     outline: none;
     transition: border-color 0.15s;
 }
@@ -339,12 +345,12 @@ tr:hover td {
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: var(--accent);
+    border-color: var(--color-blue);
     box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.1);
 }
 
 .form-group select option {
-    background: var(--surface2);
+    background-color: var(--bg-hover);
 }
 
 .form-group textarea {
@@ -358,75 +364,99 @@ tr:hover td {
     gap: 14px;
 }
 
+/* ===== Alert Messages ===== */
 .error-msg {
-    color: var(--lost);
+    color: var(--color-red);
     font-size: 0.8rem;
     margin-top: 10px;
     display: none;
     padding: 8px 12px;
-    background: rgba(248, 81, 73, 0.1);
+    background-color: rgba(248, 81, 73, 0.1);
     border: 1px solid rgba(248, 81, 73, 0.2);
-    border-radius: var(--radius);
+    border-radius: var(--border-radius);
 }
 
 .success-msg {
-    color: var(--found);
+    color: var(--color-green);
     font-size: 0.8rem;
     margin-top: 10px;
     display: none;
     padding: 8px 12px;
-    background: rgba(63, 185, 80, 0.1);
+    background-color: rgba(63, 185, 80, 0.1);
     border: 1px solid rgba(63, 185, 80, 0.2);
-    border-radius: var(--radius);
+    border-radius: var(--border-radius);
 }
 
-/* ── Empty State ── */
+/* ===== Empty State ===== */
 .empty {
     text-align: center;
     padding: 48px;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 0.875rem;
 }
 
-/* ── Login Page ── */
+/* ===== Login Page ===== */
 .login-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
     padding: 32px;
     width: 100%;
     max-width: 380px;
 }
 
 .login-box h2 {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 1rem;
     text-align: center;
     margin-bottom: 6px;
 }
 
 .login-box h2 span {
-    color: var(--accent);
+    color: var(--color-blue);
 }
 
 .login-box p {
     text-align: center;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 0.85rem;
     margin-bottom: 24px;
 }
 
-/* ── Responsive ── */
+/* ===== Responsive Design ===== */
 @media (max-width: 768px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    header { padding: 0 16px; }
-    main { padding: 20px 16px; }
-    nav a { padding: 6px 8px; font-size: 0.8rem; }
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    header {
+        padding: 0 16px;
+    }
+
+    main {
+        padding: 20px 16px;
+    }
+
+    nav a {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
 }
 
 @media (max-width: 480px) {
-    .stats { grid-template-columns: 1fr; }
-    .form-row { grid-template-columns: 1fr; }
-    table { font-size: 0.8rem; }
-    th, td { padding: 8px 10px; }
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        font-size: 0.8rem;
+    }
+
+    th, td {
+        padding: 8px 10px;
+    }
 }

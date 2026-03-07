@@ -137,6 +137,18 @@ async function showDetail(id) {
             item = json.data;
         } catch { return; }
     }
+    // Re-fetch canEdit from full list if not available
+    if (item.canEdit === undefined) {
+        try {
+            const res = await fetch('/api/items');
+            const json = await res.json();
+            if (json.success) {
+                allItemsCache = json.data;
+                const cached = json.data.find(i => i.id === id);
+                if (cached) item = cached;
+            }
+        } catch {}
+    }
 
     const dateStr = item.date_occurred
         ? new Date(item.date_occurred).toLocaleDateString()
@@ -310,6 +322,7 @@ async function loadItemsByCategory(category) {
         if (!json.success) return;
 
         const items = json.data.filter(i => i.category === category);
+        allItemsCache = json.data; // cache all for showDetail
         renderTable(items, 'category');
 
     } catch (err) {
